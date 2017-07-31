@@ -1,0 +1,95 @@
+sINavHistoryQueryOptions.SORT_BY_FRECENCY_DESCENDING
+        }
+    });
+    var last = Object.create(history, {
+        name: {
+            value: 'last'
+        },
+        needsDeduplication: {
+            value: true
+        },
+        order: {
+            value: Ci.nsINavHistoryQueryOptions.SORT_BY_DATE_DESCENDING
+        }
+    });
+
+
+    var addonlistener = {
+        onUninstalling: function (addon) {
+            cancelAboutProtocol(addon);
+        },
+
+        onDisabling: function (addon) {
+            cancelAboutProtocol(addon);
+        },
+
+        onOperationCancelled: function(addon) {
+            if(addon.id == "cehomepage@mozillaonline.com") {
+                var homepage = prefs.getLocale("browser.startup.homepage", "");
+                var abouturl = prefs.getLocale("extensions.cehomepage.abouturl", "http://i.firefoxchina.cn/");
+                var urls = homepage.split("|");
+                for (var i = 0; i < urls.length; i++){
+                    urls[i] = urls[i].trim() == abouturl ? "about:cehome" : urls[i].trim();
+                }
+                homepage = urls.join("|");
+                prefs.set("browser.startup.homepage", homepage);
+            }
+        }
+    };
+
+    function cancelAboutProtocol(addon) {
+        if(addon.id == "cehomepage@mozillaonline.com") {
+            var homepage = prefs.getLocale("browser.startup.homepage", "");
+            var abouturl = prefs.getLocale("extensions.cehomepage.abouturl", "http://i.firefoxchina.cn/");
+            homepage = homepage.replace(/about:cehome/ig, abouturl);
+            prefs.set("browser.startup.homepage", homepage);
+            for (var j = 0; j < gBrowser.tabs.length; j++) {
+                if (gBrowser.getBrowserAtIndex(j).contentWindow.document.location == "about:cehome") {
+                    gBrowser.getBrowserAtIndex(j).contentWindow.document.location = abouturl;
+                }
+            }
+        }
+    }
+
+    window.addEventListener('load', function() {
+        window.setTimeout(function(evt) {
+            resetHomepageIfPossible();
+
+            // the following lines added for z.g-fox.cn, on first install of the addon, set z.g-fox.cn to homepage
+            var autoSetHomepage = prefs.get("extensions.cehomepage.autoSetHomepage", false);
+            if (autoSetHomepage) {
+                if (Application.extensions && Application.extensions.get("cehomepage@mozillaonline.com").firstRun) {
+                    cehomepage_autoSetHomepage();
+                } else if (Application.getExtensions) {
+                    // Application.extensions is obsolete in Gecko 2.0
+                    Application.getExtensions(function(exts) {
+                        if (exts.get("cehomepage@mozillaonline.com").firstRun) {
+                            cehomepage_autoSetHomepage();
+                        }
+                    });
+                }
+            }
+
+            /**
+             * The distribution.ini of the old users may still remians the cehomepage pref as "about:cehome"
+             * Still need to keep the addon listener.
+             */
+            AddonManager.addAddonListener(addonlistener);
+            window.addEventListener('unload', function(evt) {
+                AddonManager.removeAddonListener(addonlistener);
+            }, false);
+        }, 10);
+
+        // Can not put the logic below in the timeout function.
+        // Or the home page can not get the injected object in the very beginning, e.g. the very first run after profile is created.
+        document.getElementById('appcontent').addEventListener("DOMContentLoaded", function(evt) {
+            if (!evt.originalTarget instanceof HTMLDocument) {
+                return;
+            }
+
+            try {
+                var view = evt.originalTarget.defaultView;
+                if (view.top == view || view.top == view.parent) {
+                    MOA.debug(['inject', view.location.host.toLowerCase()]);
+                    inject(view.location.host.toLowerCase(), view);
+                }

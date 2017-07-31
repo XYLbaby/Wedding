@@ -1,0 +1,117 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+img{
+    border:0;
+}
+ol, ul ,li{list-style: none;}
+/* 中间部分 */
+.center-box{
+    width: 1000px;
+    height: auto;
+    margin:10px auto;
+}
+.center-font{
+    text-align: center;
+}
+.center-font span{
+    font-size: 18px;
+}
+.center-weizhi{
+    margin-top: 30px;
+    margin-left: 35px;
+}
+.center-weizhi span{
+    font-size:16px;
+}
+.center-weizhi label{
+    color: gray;
+}
+
+/* 轮播图片 */
+.center-lunboimg{
+    width:100%;
+    height:auto;
+    position: relative;
+}
+.bannerbox{
+	width: 600px;
+	height: auto;
+	margin: auto;
+}
+.banebox_page1{
+	width: 100%;
+	height: auto;
+	text-align: center;
+	margin: auto;
+	margin-top: 20px;
+}
+
+.banebox_page1 span {
+	display: inline-block;
+	width: 90px;
+	height: 90px;
+	position: relative;
+	margin: 0px 5px;
+	overflow: hidden;
+	position: relative;
+    
+}
+.active{
+	background: url(../images/ico_bg.gif) no-repeat center;
+	background-size: cover;/*控制背景图片自动放大缩小*/
+
+}
+
+/* 显示页数*/
+.banebox_page1 span p{
+	background: #000;
+	width: 45px;
+	height: 20px;
+	color: #fff;
+	position: absolute;
+	top: 45px;
+   left: 5px;
+}
+.banebox_page1 span img{
+	width: 90%;
+	height:70%;
+	margin-top: 3px;
+}
+
+.banebox_page1 label{
+	display: inline-block;
+	width: auto;
+	height: 90px;
+	line-height: 100px;
+	position: relative;
+	overflow: hidden;
+}
+.banbox_page2{
+	width: 100%;
+	height: auto;
+	margin-top: 20px;
+}
+
+.banbox_page2 span{
+	display: inline-block;
+	width: 100%;
+	height: auto;
+	overflow: hidden;
+	display: none;
+
+}
+.active2{
+	display: block !important;
+}
+
+
+.banbox_page2 span img{
+	width: 100%;
+}
+
+
+
+
+

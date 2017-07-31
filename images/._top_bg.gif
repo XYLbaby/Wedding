@@ -1,0 +1,114 @@
+y {
+                // If pref is not an complex value, an exception will be thrown.
+                return this.branch.getComplexValue(k, Ci.nsIPrefLocalizedString).data || v;
+            } catch (e) {
+                return this.get(k, v);
+            }
+        },
+        set: function(k, v) {
+            Application.prefs.setValue(k, v);
+        },
+        setLocale: function(k, v) {
+            var pls = Cc['@mozilla.org/pref-localizedstring;1'].createInstance(Ci.nsIPrefLocalizedString);
+            pls.data = v;
+            this.branch.setComplexValue(k, Ci.nsIPrefLocalizedString, pls);
+        },
+        changed: function(k) {
+            return this.branch.prefHasUserValue(k);
+        },
+        reset: function(k) {
+            try {
+                this.branch.clearUserPref(k);
+            } catch (ex) {
+                MOA.debug(['clearUserPref', k, ex]);
+            }
+        }
+    };
+
+    var homepage = {
+        init: function(cehp) {
+            var me = this;
+            cehp['startup'] = {
+                homepage: function() {
+                    return me.homepage();
+                },
+                homepage_changed: function() {
+                    return me.homepage_changed();
+                },
+                page: function() {
+                    return me.page();
+                },
+                page_changed: function() {
+                    return me.page_changed();
+                },
+                cehomepage: function() {
+                    return me.cehomepage();
+                },
+                autostart: function(flag) {
+                    return me.autostart(flag);
+                },
+                channelid: function() {
+                    return me.channelid();
+                },
+                setHome: function(url) {
+                    if (url != null && url != "" && url.indexOf("http://") == 0) {
+                        prefs.set('browser.startup.homepage', url);
+                        prefs.set('browser.startup.page', 1);
+                    } else {
+                        me.reset();
+                    }
+                }
+            };
+        },
+        reset: function() {
+            prefs.set('browser.startup.homepage', this.cehomepage());
+            prefs.set('browser.startup.page', 1);
+        },
+        homepage: function() {
+            var hp = prefs.getLocale('browser.startup.homepage', 'about:blank');
+            return hp;
+        },
+        homepage_changed: function() {
+            return prefs.changed('browser.startup.homepage') && this.homepage() != this.cehomepage();
+        },
+        page: function() {
+            return prefs.get('browser.startup.page', 1);
+        },
+        page_changed: function() {
+            return prefs.changed('browser.startup.page') && this.page() == 1;
+        },
+        cehomepage: function() {
+            return prefs.get('extensions.cehomepage.homepage', 'http://i.firefoxchina.cn');
+        },
+        autostart: function(flag) {
+            var ori = prefs.get('extensions.cehomepage.autostartup', true);
+            if (typeof flag != 'undefined') {
+                prefs.set('extensions.cehomepage.autostartup', flag);
+            }
+            return ori;
+        },
+        channelid: function() {
+            return prefs.get("app.chinaedition.channel","www.firefox.com.cn");
+        }
+    };
+
+    var sessionStore = {
+        init: function(cehp) {
+            var self = this;
+            cehp['sessionStore'] = {
+                get canRestoreLastSession() {
+                    return self.canRestoreLastSession();
+                },
+
+                restoreLastSession: function() {
+                    return self.restoreLastSession();
+                }
+            };
+        },
+
+        canRestoreLastSession: function() {
+            let ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
+            return ss.canRestoreLastSession;
+        },
+
+        restoreLastSession: function() 

@@ -1,0 +1,40 @@
+Point(System.Byte[])">
+            Decode a point on this curve from its ASN.1 encoding. The different
+            encodings are taken account of, including point compression for
+            <code>F<sub>p</sub></code> (X9.62 s 4.2.1 pg 17).
+            @return The decoded point.
+        </member>
+        <member name="T:Org.BouncyCastle.Math.EC.FpCurve">
+            Elliptic curve over Fp
+        </member>
+        <member name="T:Org.BouncyCastle.Math.EC.F2mCurve">
+            Elliptic curves over F2m. The Weierstrass equation is given by
+            <code>y<sup>2</sup> + xy = x<sup>3</sup> + ax<sup>2</sup> + b</code>.
+        </member>
+        <member name="F:Org.BouncyCastle.Math.EC.F2mCurve.m">
+            The exponent <code>m</code> of <code>F<sub>2<sup>m</sup></sub></code>.
+        </member>
+        <member name="F:Org.BouncyCastle.Math.EC.F2mCurve.k1">
+            TPB: The integer <code>k</code> where <code>x<sup>m</sup> +
+            x<sup>k</sup> + 1</code> represents the reduction polynomial
+            <code>f(z)</code>.<br/>
+            PPB: The integer <code>k1</code> where <code>x<sup>m</sup> +
+            x<sup>k3</sup> + x<sup>k2</sup> + x<sup>k1</sup> + 1</code>
+            represents the reduction polynomial <code>f(z)</code>.<br/>
+        </member>
+        <member name="F:Org.BouncyCastle.Math.EC.F2mCurve.k2">
+            TPB: Always set to <code>0</code><br/>
+            PPB: The integer <code>k2</code> where <code>x<sup>m</sup> +
+            x<sup>k3</sup> + x<sup>k2</sup> + x<sup>k1</sup> + 1</code>
+            represents the reduction polynomial <code>f(z)</code>.<br/>
+        </member>
+        <member name="F:Org.BouncyCastle.Math.EC.F2mCurve.k3">
+            TPB: Always set to <code>0</code><br/>
+            PPB: The integer <code>k3</code> where <code>x<sup>m</sup> +
+            x<sup>k3</sup> + x<sup>k2</sup> + x<sup>k1</sup> + 1</code>
+            represents the reduction polynomial <code>f(z)</code>.<br/>
+        </member>
+        <member name="F:Org.BouncyCastle.Math.EC.F2mCurve.n">
+            The order of the base point of the curve.
+        </member>
+        <member name="F:Org.BouncyCastle.Math.EC.F2mCurve.h"

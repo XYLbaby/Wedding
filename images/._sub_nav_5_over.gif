@@ -1,0 +1,115 @@
+etSelection();
+        selection = selection ? selection.toString() : "";
+        data = aEvent.dataTransfer.getData("text/x-moz-url");
+
+        if (data.length != 0) {
+          var lines = data.replace(/^\s+|\s+$/g, "").split(/\s*\n\s*/);
+          if (lines.length > 1 && lines[1] === selection)  {
+            type = "text/unicode";
+            data = selection;
+          } else {
+            type = "text/x-moz-url";
+          }
+        } else {
+          data = aEvent.dataTransfer.getData("text/plain");
+        }
+      } else if ("getDragData" in this.mainWindow.nsDragAndDrop) {
+        // Gecko 1.9.0 and older: wrapper for nsDragAndDrop.getDragData
+
+        var flavourSet = new this.mainWindow.FlavourSet();
+        flavourSet.appendFlavour("text/x-moz-url");
+        flavourSet.appendFlavour("text/unicode");
+
+        var transferDataSet = this.mainWindow.nsTransferable.get(flavourSet, this.mainWindow.nsDragAndDrop.getDragData, true);
+
+        data = transferDataSet.first.first.data;
+        type = transferDataSet.first.first.flavour.contentType;
+      }
+
+      return({ data: data, type: type });
+    },
+
+    // Wrapper for nsDragAndDrop.dragDropSecurityCheck
+    _securityCheck: function( aEvent, aDragSession, aDraggedText ) {
+      if ("dragDropSecurityCheck" in this.mainWindow.nsDragAndDrop)
+        this.mainWindow.nsDragAndDrop.dragDropSecurityCheck(aEvent, aDragSession, aDraggedText);
+      else if ("dragDropSecurityCheck" in this.mainWindow.getBrowser())
+        this.mainWindow.getBrowser().dragDropSecurityCheck(aEvent, aDragSession, aDraggedText);
+    },
+
+    // Determine if two DOM nodes are from the same content area.
+    _fromSameContentArea: function( node1, node2 ) {
+      return(
+        node1 && node1.ownerDocument && node1.ownerDocument.defaultView &&
+        node2 && node2.ownerDocument && node2.ownerDocument.defaultView &&
+        node1.ownerDocument.defaultView.top.document == node2.ownerDocument.defaultView.top.document
+      );
+    },
+
+    // Is this an event that we want to handle?
+    _shouldHandleEvent: function( evt ) {
+      return(
+        ( this._session.isDataFlavorSupported("text/unicode") ||
+          this._session.isDataFlavorSupported("text/plain") ) &&
+        ( this._session.sourceNode == null ||
+          this._fromSameContentArea(this._session.sourceNode, evt.target) )
+      );
+    },
+
+    /**
+     * Event handlers
+     **/
+
+    dragstart: function( evt ) {
+      this._sourceNode = evt.explicitOriginalTarget;
+      this._startX = evt.pageX;
+      this._startY = evt.pageY;
+    },
+
+    dragover: function( evt ) {
+      if (!this._shouldHandleEvent(evt)) return;
+      this._session.canDrop = true;
+    },
+
+    dragdrop: function( evt ) {
+      if (!this._shouldHandleEvent(evt)) return;
+
+      // Get the source node and name
+      var sourceNode = this._session.sourceNode;
+
+      if (this._sourceNode) {
+        sourceNode = this._sourceNode;
+        this._sourceNode = null;
+      }
+
+      var sourceName = (sourceNode) ? sourceNode.nodeName : "";
+
+      // Flags
+      var isURI = false;
+      var isImage = false;
+      var isAnchorLink = false;
+
+      // Parse the drag data
+      var dragData = this._getDragData(evt);
+      var lines = dragData.data.replace(/^\s+|\s+$/g, "").split(/\s*\n\s*/);
+      var str = lines.join(" ");
+
+      if (dragData.type == "text/x-moz-url") {
+        // The user has dragged either a link or an image
+
+        // By default, we want to use the URI (the first line)
+        str = lines[0];
+        isURI = true;
+
+        if (sourceName == "IMG") {
+          // Image or image link
+          isImage = true;
+
+          // If the URI does not match the source node, then this is a
+          // linked image (note that we DO want to treat images linked to
+          // themselves as if they are not linked at all)
+          if (sourceNode.src != str)
+            isAnchorLink = true;
+        } else if (sourceName == "#text") {
+          // Text link
+          isAn

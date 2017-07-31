@@ -1,0 +1,121 @@
+in(" ");
+}
+
+COBA.getOfficialFilterListString = function () {
+  var list = [];
+  var filter = document.getElementById('filterList-official');
+  var count = filter.view.rowCount;
+
+  for (var i = 0; i < count; i++) {
+    var rule = filter.view.getCellText(i, filter.columns['columnRule-official']);
+    var enabled = filter.view.getCellValue(i, filter.columns['columnEnabled-official']);
+    var item = rule + (enabled == "true" ? "" : "\b");
+    list.push(item);
+  }
+  list.sort();
+  return list.join(" ");
+}
+
+COBA.updateDelButtonStatus = function () {
+  var en = document.getElementById('filtercbx').checked;
+  var delbtn = document.getElementById('delbtn');
+  var filter = document.getElementById('filterList');
+  delbtn.disabled = (!en) || (filter.view.selection.count < 1);
+}
+
+COBA.updateAddButtonStatus = function () {
+  var en = document.getElementById('filtercbx').checked;
+  var addbtn = document.getElementById('addbtn');
+  var urlbox = document.getElementById('urlbox');
+  addbtn.disabled = (!en) || (urlbox.value.trim().length < 1);
+}
+
+COBA.findRule = function (value) {
+  var filter = document.getElementById('filterList');
+  var count = filter.view.rowCount;
+  for (var i = 0; i < count; i++) {
+    var rule = filter.view.getCellText(i, filter.columns['columnRule']);
+    if (rule == value) return i;
+  }
+  return -1;
+}
+
+COBA.addNewURL = function () {
+  var filter = document.getElementById('filterList');
+  var urlbox = document.getElementById('urlbox');
+  var rule = urlbox.value.trim();
+  if (rule != "") {
+    if ((rule != "about:blank") && (rule.indexOf("://") < 0)) {
+      rule = (/^[A-Za-z]:/.test(rule) ? "file:///" + rule.replace(/\\/g, "/") : rule);
+      if (/^file:\/\/.*/.test(rule)) rule = encodeURI(rule);
+    }
+    if (!/^\/(.*)\/$/.exec(rule)) rule = rule.replace(/\/$/, "/*");
+    rule = rule.replace(/\s/g, "%20");
+    var idx = COBA.addFilterRule(rule, true);
+    urlbox.value = "";
+    filter.view.selection.select(idx);
+    filter.boxObject.ensureRowIsVisible(idx);
+  }
+  filter.focus();
+  COBA.updateAddButtonStatus();
+}
+COBA.defaultFilter = function () {
+  COBA.initFilterList(true);
+}
+
+COBA.delSelected = function () {
+  var filter = document.getElementById('filterList');
+  var rules = document.getElementById('filterChilds');
+  if (filter.view.selection.count > 0) {
+    for (var i = rules.childNodes.length - 1; i >= 0; i--) {
+      if (filter.view.selection.isSelected(i)) rules.removeChild(rules.childNodes[i]);
+    }
+  }
+  COBA.updateDelButtonStatus();
+}
+
+COBA.onClickFilterList = function (e) {
+  var filter = document.getElementById('filterList');
+  if (!filter.disabled && e.button == 0 && e.detail >= 2) {
+    if (filter.view.selection.count == 1) {
+      var urlbox = document.getElementById('urlbox');
+      urlbox.value = filter.view.getCellText(filter.currentIndex, filter.columns['columnRule']);
+      urlbox.select();
+      COBA.updateAddButtonStatus();
+    }
+  }
+}
+
+COBA.onClickFilterListOfficial = function (e) {
+}
+
+COBA._saveToFile = function (aList) {
+  var fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+  var stream = Cc["@mozilla.org/network/file-output-stream;1"].createInstance(Ci.nsIFileOutputStream);
+  var converter = Cc["@mozilla.org/intl/converter-output-stream;1"].createInstance(Ci.nsIConverterOutputStream);
+
+  fp.init(window, null, fp.modeSave);
+  fp.defaultExtension = "txt";
+  fp.defaultString = "COBAPref";
+  fp.appendFilters(fp.filterText);
+
+  if (fp.show() != fp.returnCancel) {
+    try {
+      if (fp.file.exists()) fp.file.remove(true);
+      fp.file.create(fp.file.NORMAL_FILE_TYPE, 0666);
+      stream.init(fp.file, 0x02, 0x200, null);
+      converter.init(stream, "UTF-8", 0, 0x0000);
+
+      for (var i = 0; i < aList.length; i++) {
+        aList[i] = aList[i] + "\n";
+        converter.writeString(aList[i]);
+      }
+    } finally {
+      converter.close();
+      stream.close();
+    }
+  }
+}
+
+COBA._loadFromFile = function () {
+  var fp = Cc["@mozilla.org/filepicker;1"]

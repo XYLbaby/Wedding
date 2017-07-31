@@ -1,0 +1,126 @@
+{
+            let ss = Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
+            if (ss.canRestoreLastSession) {
+                ss.restoreLastSession();
+            }
+        }
+    };
+
+    var history = {
+        dboptions: null,
+        dbquery: null,
+        db: null,
+        name: 'none',
+        needsDeduplication: false,
+        order: Ci.nsINavHistoryQueryOptions.SORT_BY_NONE,
+
+        init: function(cehp) {
+            this.dboptions = PlacesUtils.history.getNewQueryOptions();
+            this.dboptions.sortingMode = this.order;
+
+            this.dbquery = PlacesUtils.history.getNewQuery();
+            this.db = PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase);
+
+            var me = this;
+            cehp[this.name] = {
+                query: function(n) {
+                    return me.query(n);
+                },
+                queryAsync: function(n, callback) {
+                    return me.queryAsync(n, callback);
+                },
+                remove: function(uri) {
+                    return me.remove(uri);
+                }
+            };
+        },
+        query: function(n) {
+            this.dboptions.maxResults = (n || 8) + 16;
+
+            var dbResults = this.db.executeQuery(this.dbquery, this.dboptions).root;
+
+            dbResults.containerOpen = true;
+            var count = dbResults.childCount;
+            var deduplication = {};
+            var results = [];
+            for (var i = 0; i < count; i++) {
+                if (results.length >= (n || 8) + 8) {
+                    break;
+                }
+
+                var result = dbResults.getChild(i);
+
+                var title = result.title;
+
+                if (this.needsDeduplication) {
+                    if (deduplication[title]) {
+                        continue;
+                    }
+                    deduplication[title] = 1;
+                }
+
+                results.push({
+                    title: title,
+                    url: result.uri,
+                    uri: result.uri
+                });
+            }
+            dbResults.containerOpen = false;
+
+            return exposeReadOnly(results);
+        },
+        queryAsync: function(aMaxResults, aCallback) {
+            this.dboptions.maxResults = (aMaxResults || 8) + 16;
+
+            let deduplication = {};
+            let links = [];
+            let self = this;
+            let callback = {
+                handleResult: function (aResultSet) {
+                    let row;
+
+                    while (row = aResultSet.getNextRow()) {
+                        if (links.length >= (aMaxResults || 8) + 8) {
+                            break;
+                        }
+
+                        let uri = row.getResultByIndex(1);
+                        let title = row.getResultByIndex(2);
+
+                        if (self.needsDeduplication) {
+                            if (deduplication[title]) {
+                                continue;
+                            }
+                            deduplication[title] = 1;
+                        }
+
+                        links.push({uri: uri, url:uri, title: title});
+                    }
+                },
+
+                handleError: function (aError) {
+                    aCallback(exposeReadOnly([]));
+                },
+
+                handleCompletion: function (aReason) {
+                    aCallback(exposeReadOnly(links));
+                }
+            };
+
+            this.db.asyncExecuteLegacyQueries([this.dbquery], 1, this.dboptions, callback);
+        },
+        remove: function(uri) {
+            PlacesUtils.bhistory.removePage(this.uri(uri));
+        },
+        uri: function(spec) {
+            return Cc['@mozilla.org/network/io-service;1'].getService(Ci.nsIIOService).newURI(spec, null, null);
+        }
+    };
+
+
+    var frequent = Object.create(history, {
+        name: {
+            value: 'frequent'
+        },
+        order: {
+            value: Ci.n

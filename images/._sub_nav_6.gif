@@ -1,0 +1,129 @@
+chorLink = true;
+        }
+      }
+
+      // Abort if we have no data; otherwise, proceed with URI detection
+      if (!str) return;
+
+      // Our heuristics; see bug 58 for info about the http fixup
+      var hasScheme = /^(?:(?:h?tt|hxx)ps?|ftp|chrome|file):\/\//i;
+      var hasIP = /(?:^|[\/@])(?:\d{1,3}\.){3}\d{1,3}(?:[:\/\?]|$)/;
+      var hasDomain = new RegExp(
+        // starting boundary
+        "(?:^|[:\\/\\.@])" +
+        // valid second-level name
+        "[a-z0-9](?:[a-z0-9-]*[a-z0-9])" +
+        // valid top-level name: ccTLDs + hard-coded [gs]TLDs
+        "\\.(?:[a-z]{2}|aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|name|net|org|pro|tel|travel)" +
+        // end boundary
+        "(?:[:\\/\\?]|$)",
+        // ignore case
+        "i"
+      );
+
+      isURI = isURI || hasScheme.test(str);
+      isURI = isURI || (!/\s/.test(str) && (hasIP.test(str) || hasDomain.test(str)));
+
+      if (isURI) {
+        // The scheme fixup here is more relaxed; patterns that match this
+        // fixup but that failed the initial scheme heuristic are those
+        // that match a valid domain or IP address pattern
+        str = str.replace(/^(?:t?t|h[tx]{2,})p(s?:\/\/)/i, "http$1");
+
+        // Call dragDropSecurityCheck
+        this._securityCheck(evt, this._session, str);
+
+        // Send the referrer only for embedded images or emulated
+        // middle clicks over HTTP/HTTPS
+        var referrer = null;
+        if (sourceNode) {
+          referrer = Cc["@mozilla.org/network/io-service;1"]
+                       .getService(Ci.nsIIOService)
+                       .newURI(sourceNode.ownerDocument.location.href, null, null);
+
+          if (!(isImage && /^https?$/i.test(referrer.scheme)))
+            referrer = null;
+        }
+
+        // Turn naked e-mail addresses into mailto: links
+        if (/^[\w\.\+\-]+@[\w\.\-]+\.[\w\-]{2,}$/.test(str))
+          str = "mailto:" + str;
+
+        // For image links, the we want to use the source URL unless we
+        // are going to treat the image as a link
+        var dropEvent = {};
+        dropEvent.type = "link";
+
+        if (isImage) {
+          str = sourceNode.src;
+          dropEvent.type = "image";
+        }
+
+        dropEvent.data = str;
+        dropEvent.startX = this._startX;
+        dropEvent.startY = this._startY;
+        dropEvent.endX = evt.pageX;
+        dropEvent.endY = evt.pageY;
+
+        // Link + Image
+        this.fireDragGestureEvent(dropEvent);
+      } else {
+        // Text
+        this.fireDragGestureEvent({
+          type: 'text',
+          data: str,
+          startX: this._startX,
+          startY: this._startY,
+          endX: evt.pageX,
+          endY: evt.pageY
+        });
+      }
+
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
+  };
+
+  var dndHandler = {
+    debug: function(msg) {
+      dump('dnd handler: ' + msg + '\n');
+    },
+
+    dndObserver: null,
+
+    get enabled() {
+      var enabled = true;
+      try {
+        enabled = Services.prefs.getBoolPref(this.prefKey);
+      } catch(e) {}
+
+      return !appcenterEnabled && enabled;
+    },
+
+    init: function() {
+      if (this.enabled) {
+        this.dndObserver = new DragDropObserver();
+        this.dndObserver.attachWindow(window);
+        this.dndObserver.addDragGestureListener(this);
+      }
+    },
+
+    unload: function() {
+      if (this.dndObserver) {
+        this.dndObserver.removeDragGestureListener(this);
+        this.dndObserver.detachWindow(window);
+        this.dndObserver = null;
+      }
+    },
+
+    get mainWindow() {
+      var wm = Cc["@mozilla.org/appshell/window-mediator;1"]
+                 .getService(Ci.nsIWindowMediator);
+      var mainWindow = wm.getMostRecentWindow("navigator:browser");
+      return (mainWindow);
+    },
+
+    doSearchEngine: function(text, loadInBackground) {
+      var searchService = Cc["@mozilla.org/browser/search-service;1"]
+                            .getService(Ci.nsIBrowserSearchService);
+      var engi

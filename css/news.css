@@ -1,0 +1,348 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 微软雅黑;
+}
+img {
+  border: 0;
+}
+ol, ul, li {
+  list-style: none;
+}
+a {
+  text-decoration: none;
+}
+
+
+/* 新闻咨询 */
+
+/* 中间部分--左边 */
+.box {
+  width: 1000px;
+  height: 940px;
+  background: #ffffff;
+  margin: 10px auto;
+  overflow: hidden;
+}
+.box>div {
+  float: left;
+}
+/* 左边 */
+.box-left {
+  width: 650px;
+  height: 940px;
+}
+/* 头部文字 */
+.font>span {
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 20px;
+}
+.font font {
+  font-size: 13px;
+}
+/* 列表文字 点击可变 */
+.list {
+  width: 650px;
+  height: 700px;
+  margin-top: 0px;
+  margin-left: 6px;
+}
+.list a {
+  color: black;
+}
+.list-ul {
+  width: 599px;
+  height: 75px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+/* 背景图标 */
+.bgtubiao {
+  width: 63px;
+  height: 65px;
+  background: url(../images/listBg.gif)no-repeat;
+  margin-left: 0px;
+  float: left;
+  position: relative;
+}
+.bgtubiao p {
+  font-size: 33px;
+  color: #39424B;
+  position: absolute;
+  left: 10px;
+  top: 1px;
+}
+.bgtubiao span {
+  font-size: 12px;
+  position: absolute;
+  bottom: 5px;
+  left: 7px;
+  font-family: "宋体";
+}
+/* 文字 */
+.wenzi {
+  width: 560px;
+  height: 20;
+  margin-left: 75px;
+}
+.weight {
+  font-weight: bold;
+  font-size: 14px;
+}
+.wenzi p {
+  font-size: 12px;
+}
+.list-ul {
+  border-bottom: 1px #000 dashed;
+  margin-left: 20px;
+}
+/* 悬停 */
+.list-ul:hover .bgtubiao, .list-ul:hover .bgtubiao p {
+  background-position: 0 -65px;
+  color: #fff;
+}
+
+/* 页数 */
+.da-pages {
+  width: 500px;
+  height: 300px;
+}
+.pages {
+  width: 350px;
+  height: 37px;
+  background: #fff;
+  margin-left: 20px;
+  margin-top: 35px;
+  overflow: hidden;
+}
+.pages ul li {
+  float: left;
+  margin-left: 5px;
+}
+.pli-1 {
+  width: 55px;
+  height: 25px;
+  border: 1px solid gray;
+}
+.pli-1 span {
+  line-height: 25px;
+  font-size: 14px;
+  margin-left: 2px;
+  color: gray;
+}
+.pli-2 {
+  width: 25px;
+  height: 25px;
+  border: 1px solid gray;
+}
+.pli-2 span {
+  line-height: 25px;
+  font-size: 14px;
+  margin-left: 6px;
+  color: gray;
+}
+.pli-3 {
+  width: 25px;
+  height: 25px;
+  border: 1px solid gray;
+}
+.pli-3 span {
+  line-height: 25px;
+  font-size: 14px;
+  margin-left: 6px;
+  color: gray;
+}
+.pli-4 {
+  width: 25px;
+  height: 25px;
+  border: 1px solid gray;
+}
+.pli-4 span {
+  line-height: 25px;
+  font-size: 14px;
+  margin-left: 6px;
+  color: gray;
+}
+.pli-5 {
+  width: 25px;
+  height: 25px;
+  border: 1px solid gray;
+}
+.pli-5 span {
+  line-height: 25px;
+  font-size: 14px;
+  margin-left: 6px;
+  color: gray;
+}
+.pli-6 {
+  width: 55px;
+  height: 25px;
+  border: 1px solid gray;
+}
+.pli-6 span {
+  line-height: 25px;
+  font-size: 14px;
+  margin-left: 5px;
+  color: gray;
+}
+.pli-7 {
+  width: 70px;
+  height: 25px;
+  border: 1px solid gray;
+}
+.pli-7 span {
+  line-height: 25px;
+  font-size: 14px;
+  margin-left: 5px;
+  color: gray;
+}
+/* 页数悬停 */
+.pli-1:hover, .pli-1 span:hover, .pli-2:hover, .pli-2 span:hover, .pli-3:hover, .pli-3 span:hover, .pli-4:hover, .pli-4 span:hover, .pli-5:hover, .pli-5 span:hover, .pli-6:hover, .pli-6 span:hover, .pli-7:hover, .pli-7 span:hover {
+  color: #fff;
+  background: red;
+}
+
+/* 右边部分 */
+.box-right {
+  width: 350px;
+  height: 850px;
+}
+/* 推荐图片文章 */
+.tuijian {
+  width: 290px;
+  height: 33px;
+  background: url(../images/libg16.gif) no-repeat;
+  margin-top: 35px;
+  margin-left: 46px;
+}
+.tuijian span {
+  color: #fff;
+  margin-left: 43px;
+  line-height: 34px;
+}
+
+/* 图片 */
+.boximg {
+  width: 290px;
+  height: auto;
+  margin-left: 48px;
+  margin-top: 7px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+/* 用span装整个 */
+.boximg span {
+  float: left;
+  width: 126px;
+  height: auto;
+  margin-left: 12px;
+  margin-top: 10px;
+}
+/* label标签装文字 */
+.boximg span label {
+  display: inline-block;
+  width: 80%;
+  height: auto;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 清除浮动 */
+.boximg:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+.boximg span a {
+  display: block;
+  width: 126px;
+  height: 106px;
+  position: relative;
+}
+.boximg span a img {
+  width: 100%;
+}
+/* 悬停图片缩放 */
+.boximg span a:hover {
+  -webkit-transform: scale(1.1, 1.1);
+  -moz-transform: scale(1.1, 1.1);
+  -ms-transform: scale(1.1, 1.1);
+  -o-transform: scale(1.1, 1.1);
+  transform: scale(1.1, 1.1);
+  transiton: 0.5s;
+}
+.boximg span:hover label {
+  color: red;
+}
+
+/* 热点文章 */
+.redian {
+  width: 290px;
+  height: 33px;
+  background: url(../images/libg16.gif) no-repeat;
+  margin-top: 18px;
+  margin-left: 46px;
+}
+.redian span {
+  color: #fff;
+  margin-left: 43px;
+  line-height: 34px;
+}
+/* 文字设置 */
+.wenzi-shezhi a {
+  color: black;
+}
+.wenzi-shezhi {
+  margin-left: 45px;
+  width: auto;
+  height: auto;
+  overflow: hidden;
+}
+.pp {
+  width: 291px;
+  height: 28px;
+  background: url(../images/news_07.png) no-repeat;
+  margin-top: 8px;
+}
+.pp:hover {
+  background-position: 0 -28px;
+  color: white;
+}
+.pp span {
+  margin-left: 27px;
+  line-height: 28px;
+  display: inline-block;
+  width: 64%;
+  height: auto;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fanhui {
+  width: 350px;
+  height: 25px;
+  position: relative;
+}
+.fanhui-1 {
+  width: 100px;
+  height: 25px;
+  background: #B4B4B4;
+  position: absolute;
+  right: 0px;
+}
+.fanhui-1 span {
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  margin-left: 5px;
+}
+.fanhui .fanhui-1:hover, .fanhui .fanhui-1 span:hover {
+  background: red;
+  color:#fff;
+}
+

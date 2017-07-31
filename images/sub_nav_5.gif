@@ -1,0 +1,43 @@
+code>&#956;</code> of the elliptic curve.
+            @return <code>&#956;</code> of the elliptic curve.
+            @throws ArgumentException if the given ECCurve is not a
+            Koblitz curve.
+        </member>
+        <member name="M:Org.BouncyCastle.Math.EC.F2mCurve.GetSi">
+            @return the auxiliary values <code>s<sub>0</sub></code> and
+            <code>s<sub>1</sub></code> used for partial modular reduction for
+            Koblitz curves.
+        </member>
+        <member name="M:Org.BouncyCastle.Math.EC.F2mCurve.solveQuadradicEquation(Org.BouncyCastle.Math.EC.ECFieldElement)">
+             Solves a quadratic equation <code>z<sup>2</sup> + z = beta</code>(X9.62
+             D.1.6) The other solution is <code>z + 1</code>.
+            
+             @param beta
+                        The value to solve the qradratic equation for.
+             @return the solution for <code>z<sup>2</sup> + z = beta</code> or
+                     <code>null</code> if no solution exists.
+        </member>
+        <member name="M:Org.BouncyCastle.Math.EC.F2mCurve.IsTrinomial">
+             Return true if curve uses a Trinomial basis.
+            
+             @return true if curve Trinomial, false otherwise.
+        </member>
+        <member name="P:Org.BouncyCastle.Math.EC.F2mCurve.IsKoblitz">
+            Returns true if this is a Koblitz curve (ABC curve).
+            @return true if this is a Koblitz curve (ABC curve), false otherwise
+        </member>
+        <member name="T:Org.BouncyCastle.Crypto.Tls.ByteQueue">
+            <remarks>
+            A queue for bytes.
+            <p>
+            This file could be more optimized.
+            </p>
+            </remarks>
+        </member>
+        <member name="F:Org.BouncyCastle.Crypto.Tls.ByteQueue.InitBufSize">
+            The initial size for our buffer.
+        </member>
+        <member name="M:Org.BouncyCastle.Crypto.Tls.ByteQueue.NextTwoPow(System.Int32)">
+            <returns>The smallest number which can be written as 2^x which is bigger than i.</returns>
+        </member>
+  
